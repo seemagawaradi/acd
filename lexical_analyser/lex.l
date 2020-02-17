@@ -8,9 +8,6 @@
     int nested_comment_stack = 0;
     int line = 0,keyword=0,identifier=0,operator=0,preprocessor=0,strings=0,constant=0,bitwise=0,compare=0,comment1=0,multicomment=0,error=0,delimiter=0;
 
-    void print(){
-        int i;
-    }
 
 %}
     
