@@ -6,7 +6,7 @@
     char bstack[100];
     int btop = -1;
     int nested_comment_stack = 0;
-    int line = 0,keyword=0,identifier=0,operator=0,preprocessor=0,strings=0,constant=0,bitwise=0,compare=0,comment1=0,error=0,delimiter=0;
+    int line = 0,keyword=0,identifier=0,operator=0,preprocessor=0,strings=0,constant=0,bitwise=0,compare=0,comment1=0,multicomment=0,error=0,delimiter=0;
 
     void print(){
         int i;
@@ -14,9 +14,6 @@
 
 %}
     
-
-
-
 LEQ <=
 GEQ >=
 EQ =
@@ -120,7 +117,7 @@ WRONG_ID ([0-9\*\-\+\%\/]+[a-zA-Z][a-zA-Z0-9\*\-\+\%\/]*)
 
 {PREPROCESSOR} {preprocessor++; printf("%s \t---- PREPROCESSOR\n", yytext);}
 {STRING} {printf("%s \t---- STRING \n", yytext);strings++;}
-{MULTILINE} {printf("%s \t---- MULTI LINE COMMENT\n", yytext); }
+{MULTILINE} {printf("%s \t---- MULTI LINE COMMENT\n", yytext); multicomment++;}
 {KEYWORD} {printf("%s \t---- KEYWORD\n", yytext); keyword++;}
 {IDENTIFIER} {printf("%s \t---- IDENTIFIER\n", yytext); identifier++;}
 {WRONG_ID} {printf("%s \t---- ERROR: ILL-FORMED IDENTIFIER\n", yytext);error++;}
@@ -139,10 +136,7 @@ int yywrap(){
 
 int main(){
     yyin = fopen("var.c","r");
-
     yylex();
     printf("\n FINAL COUNT\n");
-    printf("%d preprocessor\n%d string\n%d keyword\n%d identifier\n%d operator\n%d constant\n%d comparison\n%d error\n%d comment\n",preprocessor,strings,keyword,identifier,operator,constant,compare,error,comment1);
-    
-    
+    printf("%d preprocessor\n%d string\n%d keyword\n%d identifier\n%d operator\n%d constant\n%d comparison\n%d error\n%d comment\n%d multicomment\n",preprocessor,strings,keyword,identifier,operator,constant,compare,error,comment1,multicomment);    
 }
