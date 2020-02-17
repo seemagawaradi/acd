@@ -8,68 +8,8 @@
     int nested_comment_stack = 0;
     int line = 0,keyword=0,identifier=0,operator=0,preprocessor=0,strings=0,constant=0,bitwise=0,compare=0,comment1=0,error=0,delimiter=0;
 
-
-    
-   
-
-    struct hashtable{
-        char name[100];
-        char type[100];
-        int len;
-    }table[1000];
-
-    int Hash(char *s){
-        int mod = 1001;
-        int l = strlen(s), val = 0, i;
-        for(i = 0; i < l; i++){
-            val = val * 10 + (s[i]-'A');
-            val = val % mod;
-            while(val < 0){
-                val += mod;
-            }
-        }
-        return val;
-    }
-
-    void insert_symbol(char *lexeme, char *token_name){
-        
-        int l1 = strlen(lexeme);
-        int l2 = strlen(token_name);
-        int v = Hash(lexeme);
-        if(table[v].len == 0){
-            strcpy(table[v].name, lexeme);
-            strcpy(table[v].type, token_name);
-            
-            table[v].len = strlen(lexeme);
-            return;
-        }
-
-        if(strcmp(table[v].name,lexeme) == 0)
-        return;
-
-        int i, pos = 0;
-
-        for (i = 0; i < 1001; i++){
-            if(table[i].len == 0){
-                pos = i;
-                break;
-            }
-        }
-
-        strcpy(table[pos].name, lexeme);
-        strcpy(table[pos].type, token_name);
-        table[pos].len = strlen(lexeme);
-
-    }
-
     void print(){
         int i;
-        for(i = 0;i < 1001; i++){
-            if(table[i].len == 0){
-                continue;
-            }
-            printf("%15s \t %40s\n",table[i].name,table[i].type);
-        }
     }
 
 %}
@@ -179,12 +119,12 @@ WRONG_ID ([0-9\*\-\+\%\/]+[a-zA-Z][a-zA-Z0-9\*\-\+\%\/]*)
 "//".*                  {printf("%s \t---- SINGLE LINE COMMENT\n", yytext);comment1++;}
 
 {PREPROCESSOR} {preprocessor++; printf("%s \t---- PREPROCESSOR\n", yytext);}
-{STRING} {printf("%s \t---- STRING \n", yytext); insert_symbol(yytext,"STRING CONSTANT");strings++;}
+{STRING} {printf("%s \t---- STRING \n", yytext);strings++;}
 {MULTILINE} {printf("%s \t---- MULTI LINE COMMENT\n", yytext); }
-{KEYWORD} {printf("%s \t---- KEYWORD\n", yytext); insert_symbol(yytext, "KEYWORD");keyword++;}
-{IDENTIFIER} {printf("%s \t---- IDENTIFIER\n", yytext); insert_symbol(yytext, "IDENTIFIER");identifier++;}
+{KEYWORD} {printf("%s \t---- KEYWORD\n", yytext); keyword++;}
+{IDENTIFIER} {printf("%s \t---- IDENTIFIER\n", yytext); identifier++;}
 {WRONG_ID} {printf("%s \t---- ERROR: ILL-FORMED IDENTIFIER\n", yytext);error++;}
-{NUMBER_CONSTANT} {printf("%s \t---- NUMBER CONSTANT\n", yytext); insert_symbol(yytext, "NUMBER CONSTANT");constant++;}
+{NUMBER_CONSTANT} {printf("%s \t---- NUMBER CONSTANT\n", yytext);constant++;}
 {OPERATOR} {printf("%s \t---- ARITHMETIC OPERATOR\n", yytext);operator++;} 
 {BITWISE} {printf("%s \t---- BITWISE OPERATOR\n", yytext);bitwise++;}
 {COMPARISON} {printf("%s \t---- COMPARISON OPERATOR\n", yytext);compare++;}
@@ -198,22 +138,10 @@ int yywrap(){
 }
 
 int main(){
-
-   
-   
-
-    int i;
-    for (i = 0; i < 1001; i++){
-        table[i].len=0;
-    }
     yyin = fopen("var.c","r");
 
     yylex();
-    printf("\n\n----------------------------------------------------------------------------\n\t\t\t\tSYMBOL TABLE\n----------------------------------------------------------------------------\n");   
-	printf("\tLexeme \t\t\t\t\t\tToken\n"); 
-	printf("----------------------------------------------------------------------------\n");
-    print();
-    
+    printf("\n FINAL COUNT\n");
     printf("%d preprocessor\n%d string\n%d keyword\n%d identifier\n%d operator\n%d constant\n%d comparison\n%d error\n%d comment\n",preprocessor,strings,keyword,identifier,operator,constant,compare,error,comment1);
     
     
